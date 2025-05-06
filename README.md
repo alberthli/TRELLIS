@@ -10,6 +10,49 @@
 
 ***Check out our [Project Page](https://trellis3d.github.io) for more videos and interactive demos!***
 
+## FORK: New Installation Instructions (May 2025)
+The main version of `trellis` has a lot of broken installation instructions. Here is my fixed version, which I implemented by defining a `pyproject.toml`. As of the creation of this fork, we have to pin `torch` to 2.6.0+cu124. There are two blockers:
+1. `flash-attn` hasn't been fixed to be installable with the most recent version of `torch` yet, and the latest version it is compatible with is 2.6.0+cu124. See [this issue](https://github.com/Dao-AILab/flash-attention/issues/1644).
+2. `kaolin` is currently only available for 2.5.1+cu124. See the [installation instructions](https://kaolin.readthedocs.io/en/latest/notes/installation.html). However, they have indicated that they are trying to support the latest torch versions whenever the newest release happens. See [this issue](https://github.com/NVIDIAGameWorks/kaolin/issues/865). Despite this, it seems like the example mesh generation code seems to work even if we use a later torch version.
+```bash
+# clone with submodules
+git clone --recurse-submodules https://github.com/alberthli/TRELLIS.git
+
+# step 1: create a new conda environment
+conda create -n trellis python=3.12
+conda activate trellis
+
+# step 2: install conda-specific dependencies
+conda install -c conda-forge libstdcxx-ng
+conda install -c nvidia cuda-toolkit=12.9
+
+# step 3: install base dependencies
+pip install -e . --extra-index-url https://download.pytorch.org/whl/cu124
+
+# step 4: packages that are not on pypi
+mkdir -p /tmp/extensions
+
+git clone https://github.com/NVlabs/nvdiffrast.git /tmp/extensions/nvdiffrast
+git clone --recurse-submodules https://github.com/JeffreyXiang/diffoctreerast.git /tmp/extensions/diffoctreerast
+git clone https://github.com/autonomousvision/mip-splatting.git /tmp/extensions/mip-splatting
+cp -r extensions/vox2seq /tmp/extensions/vox2seq
+
+pip install /tmp/extensions/nvdiffrast \
+  /tmp/extensions/diffoctreerast \
+  /tmp/extensions/mip-splatting/submodules/diff-gaussian-rasterization/ \
+  /tmp/extensions/vox2seq
+
+# step 5: handle kaolin manually
+pip install kaolin==0.17.0 -f https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.5.1_cu124.html
+
+# step 6: set the CPLUS_INCLUDE_PATH environment variable in the conda env so that nvdiffrast can discover the cuda headers
+conda env config vars set CPLUS_INCLUDE_PATH=$CONDA_PREFIX/targets/x86_64-linux/include
+
+# (only once) re-enter the env to apply the env var hook
+conda activate base
+conda activate trellis
+```
+
 <!-- Features -->
 ## 🌟 Features
 - **High Quality**: It produces diverse 3D assets at high quality with intricate shape and texture details.

@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trellis"
+version = "0.0.1"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    {name = "Microsoft"},
+]
+
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+
+# flash-attn is currently only installable by pip up to torch2.6.0+cu124
+# see: https://github.com/Dao-AILab/flash-attention/issues/1644
+# however, kaolin is currently only built up to torch2.5.1+cu124
+# see: https://kaolin.readthedocs.io/en/latest/notes/installation.html
+dependencies = [
+    "pillow",
+    "imageio",
+    "imageio-ffmpeg",
+    "tqdm",
+    "easydict",
+    "opencv-python-headless",
+    "scipy",
+    "ninja",
+    "rembg",
+    "onnxruntime",
+    "trimesh",
+    "open3d",
+    "xatlas",
+    "pyvista",
+    "pymeshfix",
+    "igraph",
+    "transformers",
+    "torch==2.6.0+cu124",
+    "torchvision==0.21.0",
+    "utils3d @ git+https://github.com/EasternJournalist/utils3d.git@9a4eb15e4021b67b12c460c7057d642626897ec8",
+    "xformers",
+    "flash-attn",
+    "spconv-cu124",
+]
+
+[tool.setuptools.packages.find]
+include = ["trellis"]
